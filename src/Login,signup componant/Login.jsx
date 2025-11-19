@@ -1,88 +1,97 @@
 import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../Firebase + Authentication/AuthContext";
-import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
-  const { signInUser } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    const form = event.target;
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
 
-    try {
-      const result = await signInUser(email, password);
-      console.log("Logged in user:", result.user);
-
-      const loggedUser = { email };
-
-      // Get JWT from backend
-      await axios.post("http://localhost:5000/jwt", loggedUser, {
-        withCredentials: true,
+    login(email, password)
+      .then((result) => {
+        alert("Login successful!");
+        navigate("/");
+      })
+      .catch((error) => {
+        alert(error.message);
       });
-
-      alert("✅ Successfully Logged In!");
-      navigate("/"); // redirect after login
-    } catch (error) {
-      console.log("Login error:", error.message);
-      alert("Login failed! Please check your email or password.");
-    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 p-6">
-      <div className="card w-full max-w-md bg-white/10 backdrop-blur-md text-white shadow-2xl rounded-2xl border border-white/20 p-6">
-        <h1 className="text-4xl font-bold text-center mb-6 drop-shadow-md">
-          Welcome Back 👋
-        </h1>
-        <form className="space-y-5" onSubmit={handleLogin}>
-          <div>
-            <label className="block mb-2 font-semibold text-sm">Email</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              required
-            />
-          </div>
+    <div className="min-h-screen bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center px-4">
+      <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl flex flex-col lg:flex-row overflow-hidden">
+        
+        {/* Left Side text */}
+        <div className="lg:w-1/2 w-full p-10 flex flex-col justify-center">
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Login Now!
+          </h1>
+          <p className="text-gray-600">
+            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
+            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
+            a id nisi.
+          </p>
+        </div>
 
-          <div>
-            <label className="block mb-2 font-semibold text-sm">Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              required
-            />
-            <div className="flex justify-between items-center mt-2 text-sm">
-              <Link to="/signup" className="text-pink-200 hover:text-white transition">
-                Create account
-              </Link>
-              <a href="#" className="text-indigo-200 hover:text-white transition">
-                Forgot password?
-              </a>
+        {/* Right Side Login Form */}
+        <div className="lg:w-1/2 w-full bg-base-100 p-8 lg:p-12">
+          <form onSubmit={handleLogin} className="space-y-4">
+
+            <div>
+              <label className="label">
+                <span className="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                className="input input-bordered w-full"
+                required
+              />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-3 rounded-lg font-bold text-white hover:scale-105 transition-transform shadow-md"
-          >
-            Login
-          </button>
-        </form>
+            <div>
+              <label className="label">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                className="input input-bordered w-full"
+                required
+              />
 
-        <p className="text-center text-sm text-gray-200 mt-6">
-          Don’t have an account?{" "}
-          <Link to="/signup" className="text-pink-200 font-semibold hover:text-white transition">
-            Sign up here
-          </Link>
-        </p>
+              <label className="label">
+                <a className="label-text-alt link link-hover">
+                  Forgot password?
+                </a>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              className="btn w-full text-white bg-gradient-to-r from-purple-600 to-pink-500 border-0"
+            >
+              Login
+            </button>
+
+            <p className="text-center text-sm pt-2">
+              Don’t have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-purple-600 font-semibold hover:underline"
+              >
+                Sign Up
+              </Link>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );

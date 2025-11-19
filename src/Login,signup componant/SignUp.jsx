@@ -1,108 +1,97 @@
 import React, { useContext } from "react";
 import AuthContext from "../Firebase + Authentication/AuthContext";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-  const { createUser, logout } = useContext(AuthContext);
+  const { signup, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleSignup = async (event) => {
-    event.preventDefault();
-    const form = event.target;
+  const handleSignUp = (e) => {
+    e.preventDefault();
+    const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-    const confirmPassword = form.confirmPassword.value;
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    const user = { email, password };
-
-    try {
-      // 1️⃣ Create user in Firebase
-      const data = await createUser(email, password);
-      console.log("User created:", data.user);
-      alert("Account successfully created! Now you can login.");
-
-      // 2️⃣ Save user in backend DB
-      const backendUrl = import.meta.env.VITE_BACKEND_URL; // .env.local variable
-      const res = await axios.post(`${backendUrl}/users`, user);
-      console.log("User saved to DB:", res.data);
-
-      // 3️⃣ Logout user after signup
-      await logout();
-      form.reset();
-      navigate("/login");
-      console.log("Logged out successfully");
-    } catch (error) {
-      if (error.code === "auth/email-already-in-use") {
-        alert("Email already in use");
-      } else {
-        console.error(error);
-        alert(error.message || "Failed to create account!");
-      }
-    }
+    signup(email, password)
+      .then((result) => {
+        alert("Account created successfully!");
+        return logout();
+      })
+      .then(() => {
+        navigate("/login");
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-6">
-      <div className="card w-full max-w-md bg-white/10 backdrop-blur-md text-white shadow-2xl rounded-2xl border border-white/20 p-6">
-        <h1 className="text-4xl font-bold text-center mb-6 drop-shadow-md">
-          Create an Account
-        </h1>
-        <form className="space-y-5" onSubmit={handleSignup}>
-          <div>
-            <label className="block mb-2 font-semibold text-sm">Email</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 font-semibold text-sm">Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400"
-              required
-            />
-          </div>
-          <div>
-            <label className="block mb-2 font-semibold text-sm">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm your password"
-              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-400"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 py-3 rounded-lg font-bold text-white hover:scale-105 transition-transform shadow-md"
-          >
-            Sign Up
-          </button>
-        </form>
+    <div className="min-h-screen bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center px-4">
+      <div className="bg-white w-full max-w-4xl rounded-xl shadow-2xl flex flex-col lg:flex-row overflow-hidden">
+        
+        {/* Left Side Text */}
+        <div className="lg:w-1/2 w-full p-10 flex flex-col justify-center">
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Sign Up Now!
+          </h1>
+          <p className="text-gray-600">
+            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
+            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
+            a id nisi.
+          </p>
+        </div>
 
-        <p className="text-center text-sm text-gray-200 mt-6">
-          Already have an account?{" "}
-          <a
-            href="/login"
-            className="text-pink-200 font-semibold hover:text-white transition"
-          >
-            Login here
-          </a>
-        </p>
+        {/* Right Side Form */}
+        <div className="lg:w-1/2 w-full bg-base-100 p-8 lg:p-12">
+          <form onSubmit={handleSignUp} className="space-y-4">
+
+            <div>
+              <label className="label">
+                <span className="label-text">Email</span>
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                className="input input-bordered w-full"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="label">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                className="input input-bordered w-full"
+                required
+              />
+
+              <label className="label">
+                <a className="label-text-alt link link-hover">
+                  Forgot password?
+                </a>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              className="btn w-full text-white bg-gradient-to-r from-purple-600 to-pink-500 border-0"
+            >
+              Sign Up
+            </button>
+
+            <p className="text-center text-sm pt-2">
+              Already have an account?{" "}
+              <a href="/login" className="text-purple-600 font-semibold">
+                Login
+              </a>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );
