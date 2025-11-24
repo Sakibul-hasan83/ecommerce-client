@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import AuthContext from "../Firebase + Authentication/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -11,9 +12,17 @@ const Login = () => {
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
+    const user = {email,password}
+    console.log(user)
 
     login(email, password)
       .then((result) => {
+
+   axios.post("http://localhost:5000/users",user)
+    .then(res=>console.log(res.data))
+    .catch(err=>console.log(err))
+
+
         alert("Login successful!");
         navigate("/");
       })
